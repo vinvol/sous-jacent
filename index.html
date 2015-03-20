@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Underlying</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script>
+<script type="text/javascript" src="fadeText.js"></script>
+<script type="text/javascript" src="blur.js"></script>
+
+	<style type="text/css" media="all">
+		* { -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -o-user-select: none; user-select: none; }
+		* { margin: 0; padding: 0; }
+		body { background: black; color: white; overflow: hidden; cursor: none; }
+		#container { text-align: center; width: 100%; position: absolute; bottom: 0; text-align: center; }
+		#mainSentence { font: 3em/3em sans-serif;  }
+		ui-draggable { cursor: -moz-grab; }
+		ui-draggable-dragging { cursor: -moz-dragging; }
+		
+		.fadeText { text-shadow: 0 0 0 white; color: transparent; 
+		  -moz-transition: all 1s; 
+		  -webkit-transition: all 1s;  
+		  -ms-transition: all 1s;  
+		  -o-transition: all 1s;  
+		  transition: all 1s;  
+		}
+		
+		.fading { text-shadow: 0 0 80px white; color: transparent; }
+		
+		.leaf { font: 5em sans-serif; color:#111; }
+		
+		#under { position: absolute; left: 50%; top: 50%; text-shadow: 0 0 5px white; }
+		.inter {margin-left: -50%;}
+		
+	</style>
+</head>
+<body>
+
+<div id="under"><span class="inter">sens</span></div>
+<div id="leaves">
+</div>
+<div id="container">
+	<span id="mainSentence"></span>
+</div>
+<div id="debug"></div>
+<div id="whole" style=" display: block; width: 100%; height: 2000px;">
+	<canvas id="cursor" width="50" height="50" style="position: absolute; top: 50px; left: 50px;"></canvas>
+</div>
+<script type="text/javascript">
+<!-- 
+var sentences = [
+	"Au début, il n'y avait rien.", 
+	"Juste cette petite impression,",
+	"Insignifiante…", 
+	"De ne pas tout percevoir.", 
+	"De ne voir que la surface.", 
+	"Quelque chose est caché !", 
+	"Quoi ?", 
+	"Qu'y a-t-il derrière ?", 
+	"Il faut gratter pour extraire le sens.",
+	"Lire entre les lignes.",
+	],
+	
+	smiles = [
+	"apparence",
+	"aspect",
+	"faux-semblant",
+	"masque",
+	"voiles",
+	"secrets",
+	"sourires",
+	"trompe-l'oeil",
+	"vernis"
+	];
+
+function buildSmiles() {
+	
+	var i = 0,
+		rnd = 0,
+		maxSmiles = smiles.length,
+		htmlToInsert = "";
+	for (i; i<12; i++) {
+		rndLeft = Math.floor( Math.random()*10 - 5);
+		rndTop = Math.floor( Math.random()*10 - 5);
+		rndSmiles = Math.floor( Math.random()*maxSmiles);
+		htmlToInsert += "<div class=\"leaf\" style=\"position:absolute; left: " + (50 + rndLeft) + "%; top: " + (45 + rndTop) + "%\"><span class=\"inter\">" + smiles[rndSmiles] + "</span></div>";
+	}
+	$('#leaves').html(htmlToInsert);
+	$(".leaf").draggable();
+	$("#under").show();
+}
+	
+function showSmiles() {
+	$("#leaves").show();
+	$("#mainSentence").data('fadeText').stopRollOver();
+	$("#under").show();
+}
+	
+function initCursor(e) {
+	var canvas = document.getElementById("cursor"),
+		ctx = canvas.getContext("2d"),
+		image = new Image();
+	image.src = "data:image/gif;base64,R0lGODlhDAAVAJEAAAAAAP///////wAAACH5BAEAAAIALAAAAAAMABUAAAIwhI4pYJoQmlshTlrlq9lBbm1geHyjZJ7lCBppxsTcp9H01twl2pWK7ulNgD+hp1EAADs=";
+    image.onload = function() {		
+		ctx.drawImage(image, 0, 0);  
+	}
+	canvas = $(canvas);
+	
+	if( typeof e === "object") {
+		canvas.css("top", e.clientY +1 );
+		canvas.css("left", e.clientX +1);
+	}
+	$("body").live("mousemove", function(e) {
+		canvas.css("top", e.clientY +1);
+		canvas.css("left", e.clientX +1);
+	});
+	$("body").live("mouseleave", function(e) {
+		canvas.css("display", "none");
+	});
+	$("body").live("mouseenter", function(e) {
+		canvas.css("display", "block");
+	});	
+	$("body").live("click", function(e) {
+		stackBlurCanvasRGB( "cursor", 0, 0, 50, 50, 2 );
+	});
+	
+
+}
+	
+$(document).ready(function() {
+
+
+	$("#leaves").hide();
+	buildSmiles();
+	$("#under").hide();
+    $("#mainSentence").FadeText(sentences).one("fadeText4", showSmiles);
+	
+	
+	$("#under").bind("click", function() {
+		$(this).css("fontSize", "24px");
+	});
+	$("body").one("mouseenter", function(e) {
+		initCursor(e);
+	});
+});
+--></script>
+
+</body>
+</html>
+
